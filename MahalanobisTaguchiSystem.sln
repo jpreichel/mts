@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahalanobisTaguchiSystem", "MahalanobisTaguchiSystem\MahalanobisTaguchiSystem.csproj", "{4390FE11-2E2C-4EAC-BE00-936634B2ED0F}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahalanobisTaguchiSystemTests", "MahalanobisTaguchiSystemTests\MahalanobisTaguchiSystemTests.csproj", "{443A0332-972B-4108-B38C-6133E9FBA332}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathDotNetNumericsImplementationsTests", "MathDotNetNumericsImplementationsTests\MathDotNetNumericsImplementationsTests.csproj", "{551E7CBE-968B-4256-BE46-9804FD10669E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MtsExampleApplication", "MtsExampleApplication\MtsExampleApplication.csproj", "{550CDD4F-5398-4BC4-AFD0-5A054E268A84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{551E7CBE-968B-4256-BE46-9804FD10669E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{551E7CBE-968B-4256-BE46-9804FD10669E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{551E7CBE-968B-4256-BE46-9804FD10669E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{550CDD4F-5398-4BC4-AFD0-5A054E268A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{550CDD4F-5398-4BC4-AFD0-5A054E268A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{550CDD4F-5398-4BC4-AFD0-5A054E268A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{550CDD4F-5398-4BC4-AFD0-5A054E268A84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
