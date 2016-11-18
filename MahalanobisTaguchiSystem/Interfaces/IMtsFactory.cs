@@ -14,5 +14,6 @@ namespace MahalanobisTaguchiSystem.Interfaces
         ISpace<T> CreateSingleVariableSpaceFromSample(ISample<T> sample);
         ISpace<T> CreateSingleSampleSpaceFromSample(ISample<T> sample);
         ISample<T> CreateSampleFromArray(T[] array);
+        ISpace<T> GenerateL12();
     }
 }

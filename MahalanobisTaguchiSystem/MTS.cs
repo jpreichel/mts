@@ -1,23 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using MahalanobisTaguchiSystem.Interfaces;
 
 namespace MahalanobisTaguchiSystem
 {
-    public class MTS
+    public class Mts<T> where T : struct,
+        IComparable,
+        IComparable<T>,
+        IConvertible,
+        IEquatable<T>,
+        IFormattable
     {
         private const double Tolerance = 0.000001;
-        private readonly IMtsMathProvider<double> _provider;
-        private readonly IMtsFactory<double> _factory;
+        private readonly IMtsMathProvider<T> _provider;
+        private readonly IMtsFactory<T> _factory;
 
-        public MTS(IMtsMathProvider<double> provider, IMtsFactory<double> factory)
+        // ReSharper disable once MemberCanBeProtected.Global
+        public Mts(IMtsMathProvider<T> provider, IMtsFactory<T> factory)
         {
             _provider = provider;
             _factory = factory;
         }
         
-        public double GetMahalanobisDistance(ISpace<double> space, ISample<double> sample)
+        public double GetMahalanobisDistance(ISpace<T> space, ISample<T> sample)
         {
             var z = CalculateZ(space, sample);
             var inverseC = GetInverseCorrelationSpace(space);
@@ -29,14 +34,14 @@ namespace MahalanobisTaguchiSystem
             return 2 * step2[0] / space.Samples;
         }
 
-        public IList<bool> FindUsefulVariables(ISpace<double> space, ISample<double> sample)
+        public IList<bool> FindUsefulVariables(ISpace<T> space, ISample<T> sample)
         {
             var sampleSpace = _factory.CreateSingleSampleSpaceFromSample(sample);
 
             return FindUsefulVariables(space, sampleSpace);
         }
         
-        public IList<bool> FindUsefulVariables(ISpace<double> space, ISpace<double> samples)
+        public IList<bool> FindUsefulVariables(ISpace<T> space, ISpace<T> samples)
         {
             var variables = samples.Variables;
 
@@ -94,34 +99,20 @@ namespace MahalanobisTaguchiSystem
             return result;
         }
 
-        public ISpace<double> GetOrthogonalSpace(int varCount)
+        protected ISpace<T> GetOrthogonalSpace(int varCount)
         {
-            var runs = CeilingToPowerOfTwo(varCount + 1);
             if (varCount >= 8 && varCount < 12) // L12 OAs are weird
-            {
-                double[,] l12 = {
-                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,},
-                    {1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2,},
-                    {1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2,},
-                    {1, 2, 1, 2, 2, 1, 2, 2, 1, 1, 2,},
-                    {1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 1,},
-                    {1, 2, 2, 2, 1, 2, 2, 1, 2, 1, 1,},
-                    {2, 1, 2, 2, 1, 1, 2, 2, 1, 2, 1,},
-                    {2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 2,},
-                    {2, 1, 1, 2, 2, 2, 1, 2, 2, 1, 1,},
-                    {2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 2,},
-                    {2, 2, 1, 2, 1, 2, 1, 1, 1, 2, 2,},
-                    {2, 2, 1, 1, 2, 1, 2, 1, 2, 2, 1,} };
-                return _factory.CreateSpaceFromArray(l12);
-            }
+                return _factory.GenerateL12();
 
-            var oa = new double[runs, runs];
+            var runs = CeilingToPowerOfTwo(varCount + 1);
+
+            var oa = new T[runs, runs];
 
             // Power-of-two columns (1, 2, 4, etc.) start at 0 and toggle between 1 and 0 every runs/(2 * column number) rows.
             // Each other column is a binary addition of the power-of-two columns that add up to it ([n,3] = [n,1] + [n,2]).
             for (var column = 1; column < runs; column++)
             {
-                if (IsPowerOfTwo(column)) // power of two column
+                if (IsPowerOfTwo(column))
                 {
                     var value = 1;
 
@@ -129,10 +120,10 @@ namespace MahalanobisTaguchiSystem
                     {
                         var temp = runs / (2 * column);
                         if (temp != 0 && row % temp == 0) value ^= 1;
-                        oa[row, column] = value;
+                        oa[row, column] = _provider.CastToT(value);
                     }
                 }
-                else // column not a power of two
+                else
                 {
                     for (var row = 0; row < runs; row++)
                     {
@@ -141,7 +132,7 @@ namespace MahalanobisTaguchiSystem
                             var digitColumn = GetTwoToTheNthPower(digit);
                             if ((column & digitColumn) == digitColumn)
                             {
-                                oa[row, column] = (oa[row, column] + oa[row, digitColumn]) % 2;
+                                oa[row, column] = _provider.Modulo(_provider.Add(oa[row, column], oa[row, digitColumn]), _provider.CastToT(2));
                             }
                         }
                     }
@@ -149,55 +140,56 @@ namespace MahalanobisTaguchiSystem
             }
             for (var i = 0; i < runs; ++i)
                 for (var j = 0; j < runs; ++j)
-                    oa[i, j]++;
+                    oa[i, j] = _provider.Add(oa[i, j], _provider.CastToT(1));
 
             var space = _factory.CreateSpaceFromArray(oa);
             space.RemoveVariable(0);
 
             return space;
         }
-        
-        public ISample<double> CalculateZ(ISpace<double> space, ISample<double> sample)
+
+        protected ISample<T> CalculateZ(ISpace<T> space, ISample<T> sample)
         {
             var means = GetVariableMeans(space);
             var stdDevs = GetVariableStandardDeviations(space);
 
-            var z = new double[sample.Variables];
+            var z = new T[sample.Variables];
             for (var i = 0; i < sample.Variables; ++i)
             {
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (stdDevs[i] != 0)
-                    z[i] = (sample[i] - means[i]) / stdDevs[i];
+                    z[i] = _provider.CastToT((sample[i] - means[i]) / stdDevs[i]);
             }
 
             return _factory.CreateSampleFromArray(z);
         }
 
-        private static double[] GetVariableMeans(ISpace<double> space)
+        private double[] GetVariableMeans(ISpace<T> space)
         {
             var means = new double[space.Variables];
             for (var i = 0; i < space.Variables; ++i)
-                means[i] = space.GetVariableValues(i).Average();
+                means[i] = _provider.GetMeanOfValues(space.GetVariableValues(i));
 
             return means;
         }
 
-        private static double[] GetVariableStandardDeviations(ISpace<double> space)
+        private double[] GetVariableStandardDeviations(ISpace<T> space)
         {
             var stdDevs = new double[space.Variables];
             var means = GetVariableMeans(space);
             for (var i = 0; i < space.Samples; ++i)
                 for (var j = 0; j < space.Variables; ++j)
                     stdDevs[j] += (space[i, j] - means[j]) * (space[i, j] - means[j]) / space.Samples;
+
             for (var i = 0; i < stdDevs.Length; ++i)
                 stdDevs[i] = Math.Sqrt(stdDevs[i]);
 
             return stdDevs;
         }
 
-        private ISpace<double> GetInverseCorrelationSpace(ISpace<double> space)
+        private ISpace<T> GetInverseCorrelationSpace(ISpace<T> space)
         {
-            var temp = new double[space.Variables, space.Variables];
+            var temp = new T[space.Variables, space.Variables];
             for (var i = 0; i < space.Variables; i++)
             {
                 for (var j = 0; j < space.Variables; j++)
@@ -210,12 +202,12 @@ namespace MahalanobisTaguchiSystem
             return inverseSpace;
         }
 
-        public static bool IsPowerOfTwo(int n)
+        protected static bool IsPowerOfTwo(int n)
         {
             return (n & (n - 1)) == 0 && n != 0;
         }
 
-        public static int CeilingToPowerOfTwo(int n)
+        protected static int CeilingToPowerOfTwo(int n)
         {
             if (n <= 0)
                 return 1;
@@ -231,7 +223,7 @@ namespace MahalanobisTaguchiSystem
             return n;
         }
 
-        public static int GetTwoToTheNthPower(int n)
+        protected static int GetTwoToTheNthPower(int n)
         {
             return 1 << n;
         }

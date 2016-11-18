@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace MathDotNetNumericsImplementationsTests
 {
     [TestFixture, ExcludeFromCodeCoverage]
-    public class MdnnMtsMathProviderTests
+    public class MdnnDoubleMtsMathProviderTests
     {
         [Test]
         public void MultiplyGetsCorrectResultForSpaceAndSample()
@@ -20,7 +20,7 @@ namespace MathDotNetNumericsImplementationsTests
             var values2 = new double[] { 2, 1 };
             var sample = new MdnnDoubleSample(values2);
 
-            var result = new MdnnMtsMathProvider().Multiply(sample, space);
+            var result = new MdnnDoubleMtsMathProvider().Multiply(sample, space);
 
             var expected = new double[] { 2, -5, 5 };
 

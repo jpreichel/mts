@@ -36,18 +36,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MdnnDoubleSample.cs" />
-    <Compile Include="MdnnMtsDoubleFactory.cs" />
+    <Compile Include="MdnnDoubleMtsFactory.cs" />
     <Compile Include="MdnnDoubleSpace.cs" />
-    <Compile Include="MdnnMtsMathProvider.cs" />
+    <Compile Include="MdnnDoubleMtsMathProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

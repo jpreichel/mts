@@ -13,5 +13,10 @@ namespace MahalanobisTaguchiSystem.Interfaces
         ISample<T> Multiply(ISample<T> sample, ISpace<T> space);
         ISpace<T> GetInverseSpace(ISpace<T> space);
         T GetCorrelation(T[] a, T[] b);
+        double GetMeanOfValues(T[] values);
+        T CastToT(int value);
+        T CastToT(double value);
+        T Add(T a, T b);
+        T Modulo(T divedend, T divisor);
     }
 }

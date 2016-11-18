@@ -3,7 +3,7 @@ using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace MathDotNetNumericsImplementations
 {
-    public class MdnnMtsDoubleFactory : IMtsFactory<double>
+    public class MdnnDoubleMtsFactory : IMtsFactory<double>
     {
         public ISpace<double> CreateSpaceFromArray(double[,] array)
         {
@@ -29,6 +29,23 @@ namespace MathDotNetNumericsImplementations
         public ISample<double> CreateSampleFromArray(double[] array)
         {
             return new MdnnDoubleSample(array);
+        }
+
+        public ISpace<double> GenerateL12()
+        {
+            return new MdnnDoubleSpace(new double[,]{
+                    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                    {1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2},
+                    {1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2},
+                    {1, 2, 1, 2, 2, 1, 2, 2, 1, 1, 2},
+                    {1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 1},
+                    {1, 2, 2, 2, 1, 2, 2, 1, 2, 1, 1},
+                    {2, 1, 2, 2, 1, 1, 2, 2, 1, 2, 1},
+                    {2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 2},
+                    {2, 1, 1, 2, 2, 2, 1, 2, 2, 1, 1},
+                    {2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 2},
+                    {2, 2, 1, 2, 1, 2, 1, 1, 1, 2, 2},
+                    {2, 2, 1, 1, 2, 1, 2, 1, 2, 2, 1} });
         }
     }
 }

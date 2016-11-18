@@ -15,11 +15,10 @@ namespace MtsExampleApplication
             ConfigureKernel();
 
             var factory = _kernel.Get<IMtsFactory<double>>();
-            var mts = _kernel.Get<MTS>();
-
             var target = factory.CreateSpaceFromArray(Good);
-
             var samples = factory.CreateSpaceFromArray(Bad);
+
+            var mts = _kernel.Get<Mts<double>>();
 
             var variableUseful = mts.FindUsefulVariables(target, samples);
             Console.WriteLine(string.Join(" ", variableUseful));
@@ -38,9 +37,9 @@ namespace MtsExampleApplication
         private static void ConfigureKernel()
         {
             _kernel = new StandardKernel();
-            _kernel.Bind<IMtsFactory<double>>().To<MdnnMtsDoubleFactory>();
-            _kernel.Bind<IMtsMathProvider<double>>().To<MdnnMtsMathProvider>();
-            _kernel.Bind<MTS>().ToSelf();
+            _kernel.Bind<IMtsFactory<double>>().To<MdnnDoubleMtsFactory>();
+            _kernel.Bind<IMtsMathProvider<double>>().To<MdnnDoubleMtsMathProvider>();
+            _kernel.Bind<Mts<double>>().ToSelf();
         }
 
         private static readonly double[,] Good = {

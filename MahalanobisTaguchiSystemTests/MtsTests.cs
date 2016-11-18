@@ -6,16 +6,10 @@ using NUnit.Framework;
 namespace MahalanobisTaguchiSystemTests
 {
     [TestFixture]
-    public class MtsTests
+    public class MtsTests : Mts<double>
     {
-        private MTS _mts;
-
-        [SetUp]
-        public void Setup()
-        {
-            var provider = new MdnnMtsMathProvider();
-            var factory = new MdnnMtsDoubleFactory();
-            _mts = new MTS(provider, factory);
+        public MtsTests() :base(new MdnnDoubleMtsMathProvider(), new MdnnDoubleMtsFactory())
+        {   
         }
 
         [Test]
@@ -28,7 +22,7 @@ namespace MahalanobisTaguchiSystemTests
             var vector = new double[] { 0, 0, 0 };
             var sample = new MdnnDoubleSample(vector);
 
-            var z = _mts.CalculateZ(space, sample);
+            var z = CalculateZ(space, sample);
 
             CollectionAssert.AreEqual(vector, z.Storage);
         }
@@ -39,7 +33,7 @@ namespace MahalanobisTaguchiSystemTests
         [TestCase(1024)]
         public void IsPowerOfTwoCorrectlyIdentifiesPowerOfTwo(int n)
         {
-            var result = MTS.IsPowerOfTwo(n);
+            var result = IsPowerOfTwo(n);
             Assert.IsTrue(result);
         }
 
@@ -49,7 +43,7 @@ namespace MahalanobisTaguchiSystemTests
         [TestCase(104)]
         public void IsPowerOfTwoCorrectlyIdentifiesNotPowerOfTwo(int n)
         {
-            var result = MTS.IsPowerOfTwo(n);
+            var result = IsPowerOfTwo(n);
             Assert.IsFalse(result);
         }
 
@@ -60,7 +54,7 @@ namespace MahalanobisTaguchiSystemTests
         [TestCase(663, 1024)]
         public void CeilingToPowerOfTwoCorrectlyCeilings(int n, int expected)
         {
-            var result = MTS.CeilingToPowerOfTwo(n);
+            var result = CeilingToPowerOfTwo(n);
             Assert.AreEqual(expected, result);
         }
 
@@ -71,7 +65,7 @@ namespace MahalanobisTaguchiSystemTests
         [TestCase(10, 1024)]
         public void TwoToTheNthCorrectlyExponentiates(int n, int expected)
         {
-            var result = MTS.GetTwoToTheNthPower(n);
+            var result = GetTwoToTheNthPower(n);
             Assert.AreEqual(expected, result);
         }
 
@@ -98,7 +92,7 @@ namespace MahalanobisTaguchiSystemTests
                 {2, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 1, 2, 2, 1}
             };
 
-            var result = _mts.GetOrthogonalSpace(14);
+            var result = GetOrthogonalSpace(14);
 
             CollectionAssert.AreEqual(expected, result.Storage);
         }
@@ -114,7 +108,7 @@ namespace MahalanobisTaguchiSystemTests
                 {2, 2, 1}
             };
 
-            var result = _mts.GetOrthogonalSpace(3);
+            var result = GetOrthogonalSpace(3);
 
             CollectionAssert.AreEqual(expected, result.Storage);
         }
@@ -128,7 +122,7 @@ namespace MahalanobisTaguchiSystemTests
             var space = new MdnnDoubleSpace(GetGoodSpaceData());
             var sample = new MdnnDoubleSample(sampleValues);
 
-            var result = _mts.GetMahalanobisDistance(space, sample);
+            var result = GetMahalanobisDistance(space, sample);
             
             Assert.IsTrue(Math.Abs(result - expectedMd) < 0.1);
         }
@@ -141,7 +135,7 @@ namespace MahalanobisTaguchiSystemTests
             var goodSpace = new MdnnDoubleSpace(GetGoodSpaceData());
             var badSpace = new MdnnDoubleSpace(GetBadSpaceData());
 
-            var result = _mts.FindUsefulVariables(goodSpace, badSpace);
+            var result = FindUsefulVariables(goodSpace, badSpace);
 
             CollectionAssert.AreEqual(expected, result);
         }
